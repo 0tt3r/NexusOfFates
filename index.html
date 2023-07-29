@@ -5,37 +5,17 @@
     <title>Nexus of Fates</title>
     <style>
         #eventContainer div {
-            height: 100px;
-            width: 100px;
+            height: 50px;
+            width: 50px;
             margin: 10px;
+            display: inline-block;
             cursor: pointer;
-        }
-
-        #red {background-color: red;}
-        #orange {background-color: orange;}
-        #yellow {background-color: yellow;}
-        #green {background-color: green;}
-        #blue {background-color: blue;}
-        #indigo {background-color: indigo;}
-        #violet {background-color: violet;}
-
-        #description {
-            margin-top: 20px;
-            font-size: 20px;
         }
     </style>
 </head>
 <body>
     <h1>Welcome to the Nexus of Fates</h1>
-    <div id="eventContainer">
-        <div id="red"></div>
-        <div id="orange"></div>
-        <div id="yellow"></div>
-        <div id="green"></div>
-        <div id="blue"></div>
-        <div id="indigo"></div>
-        <div id="violet"></div>
-    </div>
+    <div id="eventContainer"></div>
     <div id="description">Press a color to learn about its cosmic event.</div>
 
     <script>
@@ -49,19 +29,42 @@
          violet: ["Sacrifice Event 1", "Sacrifice Event 2", "Sacrifice Event 3"],
      };
 
+     var hues = {
+         red: 0,
+         orange: 30,
+         yellow: 60,
+         green: 120,
+         blue: 240,
+         indigo: 270,
+         violet: 300
+     };
+
      var eventContainer = document.getElementById('eventContainer');
      var description = document.getElementById('description');
 
+     Object.keys(hues).forEach(function(color) {
+         var hue = hues[color];
+         for(var i = 1; i <= 10; i++) {
+             var lightness = i * 10;
+             var div = document.createElement('div');
+             div.style.backgroundColor = 'hsl(' + hue + ', 100%, ' + lightness + '%)';
+             div.id = color + lightness;
+             div.className = color;
+             eventContainer.appendChild(div);
+         }
+     });
+
      eventContainer.addEventListener('click', function(e) {
-         var eventId = e.target.id;
+         var eventId = e.target.className;
          if(eventId in events) {
              var event = events[eventId];
              var randomIndex = Math.floor(Math.random() * event.length);
              description.textContent = event[randomIndex];
              // Here you should call a function that plays the corresponding sound.
+         } else {
+             description.textContent = "This is a red herring event.";
          }
      });
     </script>
 </body>
 </html>
-
