@@ -35,8 +35,8 @@
          yellow: 60,
          green: 120,
          blue: 240,
-         indigo: 270,
-         violet: 300
+         indigo: 280,
+         violet: 320
      };
 
      var eventContainer = document.getElementById('eventContainer');
@@ -45,7 +45,7 @@
      Object.keys(hues).forEach(function(color) {
          var hue = hues[color];
          for(var i = 1; i <= 10; i++) {
-             var lightness = i * 10;
+             var lightness = 50 + 10 - 10 *Math.random();
              var div = document.createElement('div');
              div.style.backgroundColor = 'hsl(' + hue + ', 100%, ' + lightness + '%)';
              div.id = color + lightness;
