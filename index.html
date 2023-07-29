@@ -36,7 +36,7 @@
 
     <script>
 
-     const oscillatorTypes = ['sine', 'square', 'sawtooth', 'triangle'];
+     const oscillatorTypes = ['square', 'sawtooth', 'triangle'];
 
      var squares = []; // This array will store the position of each square
      var minimumDistance = 50; // The minimum allowed distance between squares
@@ -45,32 +45,58 @@
      function playFrequency(frequency, soundProperties) {
          var audioContext = new (window.AudioContext || window.webkitAudioContext)();
          var oscillator = audioContext.createOscillator();
+         var secondOscillator = audioContext.createOscillator(); // second oscillator
          var filter = audioContext.createBiquadFilter();
+         var gainNode = audioContext.createGain();
+         var gainNode2 = audioContext.createGain();
 
          // Use the sound properties stored with the square
          oscillator.type = soundProperties.oscillatorType;
+         oscillator.detune.value = soundProperties.detuneValue; // detune oscillator
+
+         secondOscillator.type = "sine";
+         secondOscillator.detune.value = soundProperties.secondDetuneValue; // detune oscillator
+
 
          filter.type = "peaking";
          filter.frequency.value = soundProperties.filterFrequency;
          filter.Q.value = soundProperties.filterQ;
+         gainNode.gain.value = soundProperties.gainValue; // adjust volume
 
          oscillator.frequency.value = frequency; // value in hertz
+         secondOscillator.frequency.value = frequency; // same frequency as the first oscillator
+
          // Connect the oscillator through the filter to the destination
          oscillator.connect(filter);
+         secondOscillator.connect(filter);
          filter.connect(audioContext.destination);
-
+         // Connect both oscillators to the gain node
+         oscillator.connect(gainNode);
+         secondOscillator.connect(gainNode);
+         gainNode.gain.value = 0;
+         gainNode2.gain.value = 0.4;
          oscillator.start();
+         secondOscillator.start();
+         // Use the ADSR envelope parameters to change the gain over time
+         gainNode.gain.linearRampToValueAtTime(soundProperties.gainValue, audioContext.currentTime + soundProperties.attackTime);
+         gainNode.gain.linearRampToValueAtTime(soundProperties.gainValue * soundProperties.sustainLevel, audioContext.currentTime + soundProperties.attackTime + soundProperties.decayTime);
 
          // Stop the oscillator after a short period of time
          setTimeout(function() {
-             oscillator.stop();
-             audioContext.close();
+             // Begin the "release" part of the ADSR envelope
+             gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + soundProperties.releaseTime);
+             // Stop the oscillators when the release phase is done
+             setTimeout(function() {
+                 oscillator.stop();
+                 secondOscillator.stop();
+                 audioContext.close();
+             }, soundProperties.releaseTime * 1000);
          }, 500);
      }
 
      function createSquare(hue, freq, description) {
          var div = document.createElement('div');
-         var lightness = 50 + 15 - 15 *Math.random();
+         var lightness = 50 + 30 - 30 *Math.random();
          var saturation = 100 - 30 *Math.random();
 
          div.style.backgroundColor = 'hsl(' + hue + ', ' + saturation + '%, ' + lightness + '%)';
@@ -92,12 +118,30 @@
          // Randomly set some filter parameters for this square
          var filterFrequency = Math.random() * 2000 + 500;
          var filterQ = Math.random() * 10;
+         // Random detuning
+         var detuneValue = (Math.random() * 200) - 100; // -100 to +100 cents detune
+         var secondDetuneValue = (Math.random() * 20) - 10; // -10 to +10 cents detune
 
+         // Random ADSR envelope parameters
+         var attackTime = Math.random() * 0.2; // 0 to 0.2 seconds
+         var decayTime = Math.random() * 0.2; // 0 to 0.2 seconds
+         var sustainLevel = Math.random() * 0.8 + 0.2; // 0.2 to 1
+         var releaseTime = Math.random() * 0.5; // 0 to 0.5 seconds
+
+         // Random gain
+         var gainValue = Math.random() * 0.6 + 0.2; // 0.2 to 1 gain (volume)
          // Store the sound properties with the square
          div.soundProperties = {
              oscillatorType: oscillatorType,
              filterFrequency: filterFrequency,
-             filterQ: filterQ
+             filterQ: filterQ,
+             detuneValue: detuneValue,
+             gainValue: gainValue,
+             secondDetuneValue: secondDetuneValue,
+             attackTime: attackTime,
+             decayTime: decayTime,
+             sustainLevel: sustainLevel,
+             releaseTime: releaseTime
          };
          div.style.left = position.left + 'px';
          div.style.top = position.top + 'px';
@@ -156,7 +200,7 @@
          var hue = hues[color];
          var freq = frequency[color];
          for(var i = 1; i <= 10; i++) {
-             eventContainer.appendChild(createSquare(hue,freq,"Example Text"));
+             eventContainer.appendChild(createSquare(hue,freq,color));
          }
      });
 
