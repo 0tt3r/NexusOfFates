@@ -1,24 +1,125 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Nexus of Fates</title>
     <style>
-        #eventContainer div {
-            height: 50px;
-            width: 50px;
-            margin: 10px;
-            display: inline-block;
-            cursor: pointer;
-        }
+     #eventContainer {
+         position: relative;
+         height: 500px;
+         width: 100%;
+     }
+     .event {
+         position: absolute;
+         height: 50px;
+         width: 50px;
+         cursor: pointer;
+     }
+
+     #textArea {
+         margin-top: 10px;
+         padding: 20px;
+         background-color: #f5f5f5;
+         border: 1px solid #ccc;
+         width: 50vw;
+         position: absolute;
+         left: 10px;
+         top: 1050px;
+     }
     </style>
 </head>
 <body>
     <h1>Welcome to the Nexus of Fates</h1>
     <div id="eventContainer"></div>
-    <div id="description">Press a color to learn about its cosmic event.</div>
+    <div id="textArea">Click a square to see the event description.</div>
 
     <script>
+
+     const oscillatorTypes = ['sine', 'square', 'sawtooth', 'triangle'];
+
+     var squares = []; // This array will store the position of each square
+     var minimumDistance = 50; // The minimum allowed distance between squares
+     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+     function playFrequency(frequency, soundProperties) {
+         var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+         var oscillator = audioContext.createOscillator();
+         var filter = audioContext.createBiquadFilter();
+
+         // Use the sound properties stored with the square
+         oscillator.type = soundProperties.oscillatorType;
+
+         filter.type = "peaking";
+         filter.frequency.value = soundProperties.filterFrequency;
+         filter.Q.value = soundProperties.filterQ;
+
+         oscillator.frequency.value = frequency; // value in hertz
+         // Connect the oscillator through the filter to the destination
+         oscillator.connect(filter);
+         filter.connect(audioContext.destination);
+
+         oscillator.start();
+
+         // Stop the oscillator after a short period of time
+         setTimeout(function() {
+             oscillator.stop();
+             audioContext.close();
+         }, 500);
+     }
+
+     function createSquare(hue, freq, description) {
+         var div = document.createElement('div');
+         var lightness = 50 + 15 - 15 *Math.random();
+         var saturation = 100 - 30 *Math.random();
+
+         div.style.backgroundColor = 'hsl(' + hue + ', ' + saturation + '%, ' + lightness + '%)';
+         div.id = hue + saturation + lightness;
+         div.className = 'event ' + hue;
+
+         var position;
+         do {
+             position = {
+                 left: Math.random() * (window.innerWidth/2 - 100),  // Random position in the window
+                 top: Math.random() * (window.innerHeight/2 - 100) // Random position in the window
+             };
+         } while (!isValidPosition(position)); // Keep generating positions until we find a valid one
+
+         squares.push(position); // Store the position of the new square
+         // Randomly select an oscillator type for this square
+         var oscillatorType = oscillatorTypes[Math.floor(Math.random() * oscillatorTypes.length)];
+
+         // Randomly set some filter parameters for this square
+         var filterFrequency = Math.random() * 2000 + 500;
+         var filterQ = Math.random() * 10;
+
+         // Store the sound properties with the square
+         div.soundProperties = {
+             oscillatorType: oscillatorType,
+             filterFrequency: filterFrequency,
+             filterQ: filterQ
+         };
+         div.style.left = position.left + 'px';
+         div.style.top = position.top + 'px';
+         div.onclick = function() {
+             document.getElementById('textArea').innerText = description;
+             playFrequency(freq,div.soundProperties);  // plays the note A4
+         };
+         return div;
+     }
+
+     function isValidPosition(position) {
+         for (var i = 0; i < squares.length; i++) {
+             var square = squares[i];
+             var dx = position.left - square.left;
+             var dy = position.top - square.top;
+             var distance = Math.sqrt(dx * dx + dy * dy);
+             if (distance < minimumDistance) {
+                 return false; // The position is too close to this square
+             }
+         }
+         return true; // The position is not too close to any square
+     }
      var events = {
          red: ["Emergence Event 1", "Emergence Event 2", "Emergence Event 3"],
          orange: ["Alliance Event 1", "Alliance Event 2", "Alliance Event 3"],
@@ -38,33 +139,27 @@
          indigo: 280,
          violet: 320
      };
+     var frequency = {
+         red: 261.63,
+         orange: 293.66,
+         yellow: 329.63,
+         green: 349.23,
+         blue: 392.00,
+         indigo: 440,
+         violet: 493.88
+     };
 
      var eventContainer = document.getElementById('eventContainer');
      var description = document.getElementById('description');
-
+     //Create the standard events
      Object.keys(hues).forEach(function(color) {
          var hue = hues[color];
+         var freq = frequency[color];
          for(var i = 1; i <= 10; i++) {
-             var lightness = 50 + 10 - 10 *Math.random();
-             var div = document.createElement('div');
-             div.style.backgroundColor = 'hsl(' + hue + ', 100%, ' + lightness + '%)';
-             div.id = color + lightness;
-             div.className = color;
-             eventContainer.appendChild(div);
+             eventContainer.appendChild(createSquare(hue,freq,"Example Text"));
          }
      });
 
-     eventContainer.addEventListener('click', function(e) {
-         var eventId = e.target.className;
-         if(eventId in events) {
-             var event = events[eventId];
-             var randomIndex = Math.floor(Math.random() * event.length);
-             description.textContent = event[randomIndex];
-             // Here you should call a function that plays the corresponding sound.
-         } else {
-             description.textContent = "This is a red herring event.";
-         }
-     });
     </script>
 </body>
 </html>
