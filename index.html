@@ -1,1 +1,67 @@
-<h1> Hello! </h1>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nexus of Fates</title>
+    <style>
+        #eventContainer div {
+            height: 100px;
+            width: 100px;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        #red {background-color: red;}
+        #orange {background-color: orange;}
+        #yellow {background-color: yellow;}
+        #green {background-color: green;}
+        #blue {background-color: blue;}
+        #indigo {background-color: indigo;}
+        #violet {background-color: violet;}
+
+        #description {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Nexus of Fates</h1>
+    <div id="eventContainer">
+        <div id="red"></div>
+        <div id="orange"></div>
+        <div id="yellow"></div>
+        <div id="green"></div>
+        <div id="blue"></div>
+        <div id="indigo"></div>
+        <div id="violet"></div>
+    </div>
+    <div id="description">Press a color to learn about its cosmic event.</div>
+
+    <script>
+     var events = {
+         red: ["Emergence Event 1", "Emergence Event 2", "Emergence Event 3"],
+         orange: ["Alliance Event 1", "Alliance Event 2", "Alliance Event 3"],
+         yellow: ["Conflict Event 1", "Conflict Event 2", "Conflict Event 3"],
+         green: ["Reflection Event 1", "Reflection Event 2", "Reflection Event 3"],
+         blue: ["Revelation Event 1", "Revelation Event 2", "Revelation Event 3"],
+         indigo: ["Liberation of Darkness Event 1", "Liberation of Darkness Event 2", "Liberation of Darkness Event 3"],
+         violet: ["Sacrifice Event 1", "Sacrifice Event 2", "Sacrifice Event 3"],
+     };
+
+     var eventContainer = document.getElementById('eventContainer');
+     var description = document.getElementById('description');
+
+     eventContainer.addEventListener('click', function(e) {
+         var eventId = e.target.id;
+         if(eventId in events) {
+             var event = events[eventId];
+             var randomIndex = Math.floor(Math.random() * event.length);
+             description.textContent = event[randomIndex];
+             // Here you should call a function that plays the corresponding sound.
+         }
+     });
+    </script>
+</body>
+</html>
+
