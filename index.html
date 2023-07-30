@@ -40,17 +40,6 @@
      var squares = []; // This array will store the position of each square
      var minimumDistance = 50; // The minimum allowed distance between squares
 
-     // create a start button
-     let startButton = document.createElement('button');
-     startButton.innerText = "Start";
-     document.body.appendChild(startButton);
-
-     startButton.addEventListener('click', () => {
-         if (audioContext.state === 'suspended') {
-             audioContext.resume();
-         }
-         startButton.remove();  // remove the start button after it's clicked
-     });
      function getRandomPolygon(radius = 50, randomPerturbation = 0.1) {
          const nSides = Math.floor(random() * 10) + 3;  // number of sides between 3 and 8
          let polygonPoints = "";
