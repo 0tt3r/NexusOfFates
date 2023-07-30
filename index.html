@@ -68,7 +68,6 @@
 
 
      function playFrequency(frequency, soundProperties) {
-         var audioContext = new (window.AudioContext || window.webkitAudioContext)();
          var oscillator = audioContext.createOscillator();
          var secondOscillator = audioContext.createOscillator(); // second oscillator
          var filter = audioContext.createBiquadFilter();
