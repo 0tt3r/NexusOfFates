@@ -39,7 +39,7 @@
      const oscillatorTypes = ['square', 'sawtooth', 'triangle'];
 
      var squares = []; // This array will store the position of each square
-     var minimumDistance = 50; // The minimum allowed distance between squares
+     var minimumDistance = 15; // The minimum allowed distance between squares
 
      function getRandomPolygon(radius = 50, randomPerturbation = 0.1) {
          const nSides = Math.floor(random() * 10) + 3;  // number of sides between 3 and 8
@@ -116,13 +116,15 @@
          div.style.backgroundColor = 'hsl(' + hue + ', ' + saturation + '%, ' + lightness + '%)';
          div.id = hue + saturation + lightness;
          div.className = 'event ' + hue;
-
+         var numCalls = 0;
          var position;
          do {
              position = {
                  left: random() * (1070 - 100),  // Random position in the window
                  top: random() * (1070 - 100) // Random position in the window
              };
+             numCalls++;
+             if(numCalls>100) break;
          } while (!isValidPosition(position)); // Keep generating positions until we find a valid one
 
          squares.push(position); // Store the position of the new square
