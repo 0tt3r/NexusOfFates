@@ -39,7 +39,6 @@
 
      var squares = []; // This array will store the position of each square
      var minimumDistance = 50; // The minimum allowed distance between squares
-     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
      // create a start button
      let startButton = document.createElement('button');
@@ -68,6 +67,7 @@
 
 
      function playFrequency(frequency, soundProperties) {
+         var audioContext = new (window.AudioContext || window.webkitAudioContext)();
          var oscillator = audioContext.createOscillator();
          var secondOscillator = audioContext.createOscillator(); // second oscillator
          var filter = audioContext.createBiquadFilter();
