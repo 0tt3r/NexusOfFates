@@ -29,25 +29,11 @@
     <div id="eventContainer"></div>
 
     <script>
-     var m_w = 123456789;
-     var m_z = 987654321;
-     var mask = 0xffffffff;
-
-     // Takes any integer
-     function seed(i) {
-         m_w = (123456789 + i) & mask;
-         m_z = (987654321 - i) & mask;
-     }
-
-     // Returns number between 0 (inclusive) and 1.0 (exclusive),
-     // just like Math.random().
-     function random()
-     {
-         m_z = (36969 * (m_z & 65535) + (m_z >> 16)) & mask;
-         m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
-         var result = ((m_z << 16) + (m_w & 65535)) >>> 0;
-         result /= 4294967296;
-         return result;
+     var seed = 10;
+     function random() {
+         var x = Math.sin(seed++) * 10000;
+         var y = x - Math.floor(x);
+         return y;
      }
 
      const oscillatorTypes = ['square', 'sawtooth', 'triangle'];
@@ -134,8 +120,8 @@
          var position;
          do {
              position = {
-                 left: random() * (window.innerWidth/2 - 100),  // Random position in the window
-                 top: random() * (window.innerHeight/2 - 100) // Random position in the window
+                 left: random() * (500 - 100),  // Random position in the window
+                 top: random() * (500 - 100) // Random position in the window
              };
          } while (!isValidPosition(position)); // Keep generating positions until we find a valid one
 
