@@ -9,9 +9,10 @@
      }
      .event {
          margin: 5px;
-         height: 50px;
-         width: 50px;
+         height: 40px;
+         width: 40px;
          cursor: pointer;
+         position: absolute;
      }
 
      #textArea {
@@ -108,7 +109,7 @@
          }, 500);
      }
 
-     function createSquare(hue, freq, description) {
+     function createSquare(hue, freq, description, x, y) {
          var div = document.createElement('div');
          var lightness = 50 + 30 - 30 *random();
          var saturation = 100 - 30 *random();
@@ -127,7 +128,11 @@
           *     if(numCalls>100) break;
           * } while (!isValidPosition(position)); // Keep generating positions until we find a valid one
           * console.log(numCalls); */
-
+         // Calculate grid position based on x and y
+         position = {
+             left: (x * 50) % window.innerWidth,  // Grid position in the window
+             top: Math.floor((x * 50) / window.innerWidth) * 50 // Grid position in the window
+         };
          squares.push(position); // Store the position of the new square
          // Randomly select an oscillator type for this square
          var oscillatorType = oscillatorTypes[Math.floor(random() * oscillatorTypes.length)];
@@ -161,9 +166,9 @@
              releaseTime: releaseTime
          };
          var id = "ID: " + random().toString(10).slice(14) + " \n"
-
-         /* div.style.left = position.left + 'px';
-          * div.style.top = position.top + 'px'; */
+         
+         div.style.left = position.left + 'px';
+         div.style.top = position.top + 'px';
          div.style['clip-path'] = 'polygon(' + getRandomPolygon() +')';
          div.onclick = function() {
              document.getElementById('textArea').innerText = id + description;
@@ -296,12 +301,12 @@
      var eventContainer = document.getElementById('eventContainer');
          var description = document.getElementById('description');
              //Create the standard events
-             Object.keys(hues).forEach(function(color) {
+             Object.keys(hues).forEach(function(color, index) {
                  var hue = hues[color];
                  var freq = frequency[color];
                  for(var i = 0; i < 10; i++) {
                      var desc = text[color][i];
-                     eventContainer.appendChild(createSquare(hue,freq,desc));
+                     eventContainer.appendChild(createSquare(hue,freq,desc, index * 10 + i, index));
                  }
              });
 
