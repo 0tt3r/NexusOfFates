@@ -32,7 +32,9 @@
      var seed = 10;
      function random() {
          var x = Math.sin(seed++) * 10000;
-         return x - Math.floor(x);
+         var y = x - Math.floor(x);
+         console.log(y);
+         return y;
      }
 
      const oscillatorTypes = ['square', 'sawtooth', 'triangle'];
