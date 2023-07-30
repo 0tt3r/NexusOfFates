@@ -163,11 +163,14 @@
              sustainLevel: sustainLevel,
              releaseTime: releaseTime
          };
+         var id = "ID: " + random().toString(10).slice(14) + " \n"
+         console.log(id)
+
          div.style.left = position.left + 'px';
          div.style.top = position.top + 'px';
          div.style['clip-path'] = 'polygon(' + getRandomPolygon() +')';
          div.onclick = function() {
-             document.getElementById('textArea').innerText = description;
+             document.getElementById('textArea').innerText = id + description;
              playFrequency(freq,div.soundProperties);  // plays the note A4
          };
          return div;
@@ -302,7 +305,6 @@
                  var freq = frequency[color];
                  for(var i = 0; i < 10; i++) {
                      var desc = text[color][i];
-                     console.log(desc);
                      eventContainer.appendChild(createSquare(hue,freq,desc));
                  }
              });
