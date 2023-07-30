@@ -1,5 +1,3 @@
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,6 +41,17 @@
      var minimumDistance = 50; // The minimum allowed distance between squares
      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
+     // create a start button
+     let startButton = document.createElement('button');
+     startButton.innerText = "Start";
+     document.body.appendChild(startButton);
+
+     startButton.addEventListener('click', () => {
+         if (audioContext.state === 'suspended') {
+             audioContext.resume();
+         }
+         startButton.remove();  // remove the start button after it's clicked
+     });
      function getRandomPolygon(radius = 50, randomPerturbation = 0.1) {
          const nSides = Math.floor(random() * 10) + 3;  // number of sides between 3 and 8
          let polygonPoints = "";
